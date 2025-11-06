@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Define properties for log file locations -->
+    <!-- Use dynamic log directory if set, otherwise fallback to logs directory -->
+    <property name="LOG_DIR" value="${DYNAMIC_LOG_DIR:-logs}" />
+    <property name="LOG_FILE" value="${LOG_DIR}/hotelbooker-automation" />
+    
+    <!-- Console Appender with colored output -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) %cyan([%thread]) %yellow(%logger{36}) - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <!-- File Appender for all logs -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FILE}-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+    
+    <!-- Separate appender for test execution logs -->
+    <appender name="TEST_EXECUTION" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/test-execution.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/test-execution-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>15</maxHistory>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
+    </appender>
+    
+    <!-- Separate appender for page action logs -->
+    <appender name="PAGE_ACTIONS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/page-actions.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/page-actions-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>15</maxHistory>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
+    </appender>
+    
+    <!-- Separate appender for error logs only -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/errors.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n%ex</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/errors-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
+    
+    <!-- Logger for HotelBooker automation classes -->
+    <logger name="com.sabre.hotelbooker" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+        <appender-ref ref="TEST_EXECUTION" />
+        <appender-ref ref="PAGE_ACTIONS" />
+        <appender-ref ref="ERROR_FILE" />
+    </logger>
+    
+    <!-- Logger for Step Definitions -->
+    <logger name="com.sabre.hotelbooker.stepdefinitions" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="TEST_EXECUTION" />
+        <appender-ref ref="ERROR_FILE" />
+    </logger>
+    
+    <!-- Logger for Page Objects -->
+    <logger name="com.sabre.hotelbooker.pageobjects" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="PAGE_ACTIONS" />
+        <appender-ref ref="ERROR_FILE" />
+    </logger>
+    
+    <!-- Reduce Playwright and other framework noise -->
+    <logger name="com.microsoft.playwright" level="WARN" />
+    <logger name="io.cucumber" level="INFO" />
+    
+    <!-- Root logger -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+        <appender-ref ref="ERROR_FILE" />
+    </root>
+</configuration>
