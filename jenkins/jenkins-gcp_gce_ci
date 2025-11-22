@@ -5,5 +5,5 @@ config["shouldbeCompiledWithJDK17"]= "YES"
 config["mailTO"] = "Charikajana@gmail.com"
 config["componentName"] = "NimbusHotelBooker"
 config["pomFilePath"] = "src/NimbusHotelBooker"
-####################################################################
-buildAndUpload(config)
+/*####################################################################*/
+checkoutAndBuild(config)
