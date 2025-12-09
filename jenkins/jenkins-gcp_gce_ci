@@ -1,0 +1,9 @@
+@Library('devopscom-shared-lib') _
+
+def config = [:]
+config["shouldbeCompiledWithJDK17"]= "YES"
+config["mailTO"] = "Charikajana@gmail.com"
+config["componentName"] = "NimbusHotelBooker"
+config["pomFilePath"] = "src/NimbusHotelBooker"
+/*####################################################################*/
+checkoutAndBuild(config)
